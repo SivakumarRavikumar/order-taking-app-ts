@@ -1,85 +1,92 @@
-Order Taking App
-Welcome to the Order Taking App! This application allows users to browse restaurants, view menus, add items to their cart, place orders, and track order status.
+# Order Taking App
 
-Features
-User Authentication: Users can sign up and log in to access the app features.
-Restaurant Browsing: Browse through a list of restaurants and view their menus.
-Menu Exploration: View detailed menus with descriptions and prices.
-Cart Management: Add items to the cart, adjust quantities, and remove items.
-Order Placement: Place orders and receive confirmation with order details.
-Order Tracking: Track the status of placed orders.
-Technologies Used
-Node.js: Backend JavaScript runtime environment.
-Express.js: Web application framework for Node.js.
-MongoDB: NoSQL database used for storing user data, menus, and orders.
-Mongoose: MongoDB object modeling for Node.js.
-JSON Web Tokens (JWT): Used for user authentication and authorization.
-bcrypt.js: Library for hashing passwords.
-Swagger UI: For API documentation.
-Jest: Testing frameworks for unit and integration tests.
+## Overview
+The Order Taking App is a web application designed for managing orders, users, and menu items. This repository contains the source code for the application.
 
-1. Clone the repository:
-git clone https://github.com/yourusername/order-taking-app.git
+## Features
+- User registration and authentication
+- Menu management
+- Cart management
+- Order placement and history tracking
 
-2. Install dependencies:
-cd order-taking-app-ts
-npm install
+## Technologies Used
+- Node.js
+- Express.js
+- MongoDB
+- TypeScript
+## Technologies preferred for Deployment
+- Docker 
+- AWS (ECR, ECS, EC2, ALB)
+- Apigee API Gateway
 
-3. Set up environment variables:
-Create a .env file in the root directory and add the following variables:
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+## Setup Instructions
+To set up the project locally, follow these steps:
 
-4. Start the server:
-npm start
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/SivakumarRavikumar/order-taking-app-ts.git
+    cd order-taking-app-ts
+    ```
 
-5.API Documentation
-API documentation is available using Swagger UI. Visit http://localhost:5000/api-docs after starting the server to view the documentation.
+2. **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-Testing
-Run tests using the following command:
+3. **Set up environment variables:**
+    Create a `.env` file in the root directory and add the necessary environment variables
+    PORT=5000
+    MONGO_URI=our_mongodb_connection_string
+    JWT_SECRET=our_jwt_secret (To do can be fetched from credstash)
+4. **Run the application:**
+    ```bash
+    npm start
+    ```
+
+## Deployment Strategy
+The application is deployed using AWS and Docker. Below are the steps for deploying the application:
+
+1. **Build the Docker image:**
+    ```bash
+    docker build -t order-taking-app-ts .
+    ```
+    1.1 ### MongoDB Setup with Docker
+
+    Deploy MongoDB as a Docker container and integrate it with our application
+
+
+2. **Upload to AWS ECR:**
+    - Create an ECR repository in the AWS Management Console.
+    - Tag and push the Docker image to ECR:
+      ```bash
+      $(aws ecr get-login --no-include-email --region our-region)
+      docker tag order-taking-app-ts:latest our-account-id.dkr.ecr.our-region.amazonaws.com/order-taking-app-ts:latest
+      docker push our-account-id.dkr.ecr.our-region.amazonaws.com/order-taking-app-ts:latest
+      ```
+
+3. **Set up AWS ECS:**
+    - Create a new ECS cluster.
+    - Define a task definition that uses the Docker image from ECR.
+    - Set up an ECS service with the task definition and configure it to use an Application Load Balancer (ALB) for load balancing.
+
+4. **Configure Auto Scaling:**
+    - Set up auto scaling for our ECS service based on CPU and memory usage.
+
+5. **Store Secrets in AWS Secrets Manager or Credstash:**
+    - Store sensitive information such as database credentials and API keys securely.
+    - Update the ECS task definition to use these secrets.
+
+6. **API Management with Apigee:**
+    - Set up an Apigee API Gateway for managing and securing our APIs.
+    - Configure rate limiting, caching, and other API management features as needed.
+
+## Testing
+To run the tests, use the following command:
+```bash
 npm test
 
 
-Deployment Strategy: Have work experience in creating all below infra's in AWS using terraform and cloudformation. 
-
-1. Docker Image Creation and ECR Upload
-Build Docker image locally using the Dockerfile.
-Tag the image with the ECR repository URI.
-Authenticate Docker to ECR registry using the AWS CLI.
-Push the Docker image to ECR using the docker push command.
-2. Secrets Management with Credstash
-Install and configure Credstash CLI locally.
-Encrypt sensitive data such as database credentials using Credstash.
-Store the encrypted secrets in DynamoDB (used by Credstash).
-Retrieve secrets during deployment using Credstash CLI or SDK and decrypt them at runtime.
-3. ECS Cluster and Service Setup
-Create an ECS cluster in the AWS Management Console.
-Define ECS task definition with the container image from ECR and specify environment variables for secrets.
-Configure the ECS service to run task definition, set up auto-scaling policies, and define the desired task count.
-Associate the ECS service with an Application Load Balancer (ALB) for routing traffic to containers.
-4. Deployment Automation
-Set up a CI/CD pipeline (e.g., Bamboo) to automate the deployment process.
-Configure the pipeline to trigger on code commits to your repository.
-Use Bamboo plan to build Docker images and push them to ECR.
-Deploy the updated task definition to ECS, triggering a rolling update of the service.
-5. Monitoring and Logging
-Enable CloudWatch Logs for ECS containers to capture application logs.
-Set up CloudWatch Alarms to monitor ECS cluster metrics and trigger autoscaling actions.
-Use CloudWatch Container Insights for deeper insights into container performance.
-6. Security and Access Control
-Configure IAM roles for ECS tasks to restrict access to AWS resources.
-Use IAM roles for ECS service accounts (IAM roles for tasks) to grant permissions to interact with other AWS services.
-Implement security best practices such as least privilege access and regularly rotate IAM credentials.
-7. High Availability and Fault Tolerance
-Enable multi-AZ deployment for ECS tasks to ensure high availability.
-Configure health checks for ECS services to detect and recover from container failures.
-Design application to be stateless and horizontally scalable for better fault tolerance.
-8. Testing and Validation
-Test our application deployment in a staging environment before promoting to production.
-
 Use AWS CloudFormation or Terraform to define our infrastructure as code for reproducible deployments.
-Conduct load testing to ensure that your application can handle expected traffic levels.
+Conduct load testing to ensure that our application can handle expected traffic levels.
 
-Note: Incorporating Apigee API Gateway for API management adds another layer of control, security, and analytics to our application's APIs (have work experience in apigee as well)
+Note: Incorporating Apigee API Gateway for API management adds another layer of control, security, and analytics to our application's APIs
