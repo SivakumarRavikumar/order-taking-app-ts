@@ -83,7 +83,6 @@ describe('Order Controller', () => {
             } as unknown as Response;
 
             const errorMessage = 'Server error';
-            // (CartItem.find as jest.Mock).mockRejectedValue(new Error(errorMessage));
             (CartItem.find as jest.Mock).mockImplementation(() => {
                 throw new Error(errorMessage);
             });
